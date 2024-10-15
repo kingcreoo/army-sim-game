@@ -48,11 +48,27 @@ local function DeepReconcile(Table0 --[[Default data]], Table1 --[[Player's data
 end
 
 -- // Module functions
-function Data.New(Player: Player)
-  local PlayerData = DeepCopy(Settings.DefaultData)
-  Data.Set(PlayerData)
+function Data.Initialize(Player: Player)
+  local PlayerData
+  local NewPlayer
 
-  return PlayerData
+  local Success, ErrorMessage = pcall(function()
+    local PlayerData = DataStore:GetAsync("Player_" .. Players:GetUserIdFromnameAsync(Player.Name))
+  end)
+
+  if not Success then
+    warn(ErrorMessage)
+    -- TODO warn player that their data has loaded improperly
+  end
+
+  if not PlayerData then
+    PlayerData = DeepCopy(Settings.DefaultData)
+    NewPlayer = true
+  end
+
+  Database[Player.Name] = PlayerData
+
+  return PlayerData, NewPlayer
 end
 
 function Data.Set(Player: Player, PlayerData: table)
