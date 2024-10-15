@@ -16,6 +16,24 @@ local SpawnPoints = Lobby:WaitForChild("SpawnPoints")
 
 -- // Local functions
 
+local function SelectSpawnPoint(Character, BruteForce: boolean)
+  local FoundSpawnPoint = false
+  for _, SpawnPoint in pairs(SpawnPoints:GetChildren()) do
+    if not BruteForce and SpawnPoint:GetAttribute("Occupied") == true then continue end
+    FoundSpawnPoint = true
+
+    SpawnPoint:SetAttribute("Occupied", true)
+    Character:SetPrimaryPartCFrame(SpawnPoint.CFrame + Vector3.new(0, 5, 0))
+
+    task.wait(30)
+    SpawnPoint:SetAttribute("Occupied", false)
+    break
+  end
+  
+  return FoundSpawnPoint
+end
+
+
 local function LoadPlayer(Player)
   local Character = Player.Character or Player.CharacterAdded:wait()
 
@@ -26,27 +44,14 @@ local function LoadPlayer(Player)
     if ReturningPlayer.Name ~= Player.Name then return end 
   
     -- Handle sending player to the lobby with randomly generated spawnpoints
-    for _, SpawnPoint in pairs(SpawnPoints:GetChildren()) do
-      if SpawnPoint:GetAttribute("Occupied") == true then continue end
-
-      SpawnPoint:SetAttribute("Occupied", true)
-      Character:SetPrimaryPartCFrame(SpawnPoint.CFrame + Vector3.new(0, 5, 0))
-
-      local PlayerLeftSpawn = false
-      Players.PlayerRemoving:Connect(function(RemovingPlayer)
-        if RemovingPlayer.Name == Player.Name then
-          PlayerLeftSpawn = true
-          SpawnPoint:SetAttribute("Occupied", false)
-        end
-      end)
-
-      task.wait(30)
-      if PlayerLeftSpawn == false then
-        SpawnPoint:SetAttribute("Occupied", false)
-      end
+    local FoundSpawnPoint: boolean = SelectSpawnPoint(Character, false)
+    if not FoundSpawnPoint then
+      SelectSpawnPoint(Character, true)
     end
   end)
 end
+
+
 
 -- // Calling & Event management
 

@@ -51,7 +51,11 @@ FadeTween.Completed:Connect(function()
   FadeInTween:Play()
   PreparedToPlay = true
 
+  local DEBOUNCE = false
   PlayButton.MouseButton1Down:Connect(function()
+    if DEBOUNCE then return end 
+    DEBOUNCE = true
+
     if PreparedToPlay == true then
       LoadPlayerEvent:FireServer()
       
@@ -64,5 +68,5 @@ FadeTween.Completed:Connect(function()
       task.wait(.5)
       LoadingScreenGui.Enabled = false
     end
-end)
+  end)
 end)
