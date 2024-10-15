@@ -53,7 +53,7 @@ function Data.Initialize(Player: Player)
   local NewPlayer
 
   local Success, ErrorMessage = pcall(function()
-    local PlayerData = DataStore:GetAsync("Player_" .. Players:GetUserIdFromNameAsync(Player.Name))
+    PlayerData = DataStore:GetAsync("Player_" .. Players:GetUserIdFromNameAsync(Player.Name))
   end)
 
   if not Success then

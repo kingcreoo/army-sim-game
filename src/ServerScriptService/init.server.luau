@@ -51,7 +51,7 @@ local function SelectSpawnPoint(Character, BruteForce: boolean)
 end
 
 
-local function LoadPlayer(Player)
+local function OnPlayerAdded(Player)
   local Character = Player.Character or Player.CharacterAdded:wait()
 
   -- // Load player's data
@@ -76,8 +76,11 @@ local function LoadPlayer(Player)
   end)
 end
 
-
+local function OnPlayerRemoving(Player)
+  Data.Remove(Player)
+end
 
 -- // Calling & Event management
 
-Players.PlayerAdded:Connect(LoadPlayer)
+Players.PlayerAdded:Connect(OnPlayerAdded)
+Players.PlayerRemoving:Connect(OnPlayerRemoving)
