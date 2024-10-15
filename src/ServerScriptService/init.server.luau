@@ -1,11 +1,13 @@
 -- // Created by KingCreoo on October 14th, 2024
 -- // Manages basic server functions
 
--- // Services & Variables
+-- // Services, Modules, & Variables
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+
+local Data = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data"))
 
 local EventsFolder = ReplicatedStorage:WaitForChild("Events")
 local FunctionsFolder = ReplicatedStorage:WaitForChild("Functions")
@@ -15,6 +17,21 @@ local Lobby = workspace:WaitForChild("Lobby")
 local SpawnPoints = Lobby:WaitForChild("SpawnPoints")
 
 -- // Local functions
+
+local function InitializeData(Player: Player, PlayerData: table)
+  local leaderstats = Instance.new("Folder")
+  leaderstats.Parent = Player
+  leaderstats.Name = "leaderstats"
+
+  for Name, Value in pairs(PlayerData["leaderstats"]) do
+    local String = type(Value) .. "Value"
+
+    local Stat = Instance.new(string.upper(string.sub(String, 1, 1)) .. string.sub(String, 2, -1))
+    Stat.Name = Name
+    Stat.Value = Value
+    Stat.Parent = leaderstats
+  end 
+end
 
 local function SelectSpawnPoint(Character, BruteForce: boolean)
   local FoundSpawnPoint = false
@@ -37,7 +54,15 @@ end
 local function LoadPlayer(Player)
   local Character = Player.Character or Player.CharacterAdded:wait()
 
-  -- TODO Load player's data
+  -- // Load player's data
+  local PlayerData, NewPlayer = Data.Initialize(Player)
+  if NewPlayer then
+    print('new player')
+    -- TODO handle new players
+  end
+  print('player has joined. their data: ', PlayerData)
+
+  InitializeData(Player, PlayerData)
  
   -- // Player has clicked the 'play' button
   LoadPlayerEvent.OnServerEvent:Connect(function(ReturningPlayer)
